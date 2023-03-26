@@ -1,0 +1,103 @@
+body {
+    line-height: 1.5em;
+}
+
+#mySummaryArea {
+    margin: 1em 0em;
+    padding: 1em 0.5em;
+    border-width: 16px 0px;
+    border-style: solid;
+    border-color: #f0d020;
+    background-color: #202020;
+    color: #f0f0f0;
+}
+
+.mysummary_section {
+    margin: 0.5em 0em;
+    background-color: transparent;
+    font-size: 1em;
+    line-height: 150%;
+    font-size: 1em;
+    /* border-width: 2px 0px 0px 2px;
+    border-style: solid;
+    border-color: #f0d020; */
+}
+
+.mysummary_section_header {
+    margin: 0em 0em;
+    background-color: #f0c0a0;
+    padding: 0.2em 0.2em;
+    font-weight: bold;
+    font-size: 1em;
+    line-height: 150%;
+    color: #202080;
+}
+
+#summaryDescription-content {
+    width: 60%;
+    font-size: 1em;
+}
+
+.mysummary_block {
+    font-weight: bold;
+    font-size: 1.1em;
+    line-height: 150%;
+}
+
+.mysummary_separator {
+    margin: 1em 0em;
+    border: 2px solid #f0d020;
+    display: none;
+}
+
+.mysummary_image {
+    margin: 0em 0em;
+    border: 2px solid #40b0ff;
+    text-align: center;
+    min-width: 800px;
+    max-width: 1024px;
+    /* max-height: 100%; */
+    /*max-width: max-content;*/
+    line-height: 150%;
+}
+
+.mysummary_image_link {}
+
+#carouselOpenAllPages {
+    display: inline;
+    margin: 0.5em 0.5em;
+    line-height: 150%;
+
+}
+
+#carouselOpenAllImages {
+    display: inline;
+    margin: 0.5em 0.5em;
+    line-height: 150%;
+
+}
+
+#openAllImagesFromSimilarityItems {
+    display: inline;
+    margin: 0.5em 0.5em;
+    line-height: 150%;
+}
+
+#trialReadingPageLink, #originalPageLink {
+    display: inline;
+    margin: 0.5em 0.5em;
+    line-height: 150%;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #c0e052;
+}
+
+a {
+    color: transparent;
+    border-radius: 2px;
+}
+
+a:hover {
+    color:#d03030;
+    border: 2px solid #e0e040;
+}
