@@ -6,13 +6,14 @@ AMZJ-WS is a chrome extension to extend page view at Amazon.co.jp.
 
 AMZJ-WS helps your window shopping at Amazon.co.jp. It extends several information regarding a product  such as trial reading images in the product detail page. See the Features section for more details.
 
-## Install
+## Installation
 
-Install from Chrome Store.
+Install this extension [here](https://chrome.google.com/webstore/detail/amzj-ws-amazon-japan-wind/mipngicaabopdmoaaeajdlfeloifjcfe?hl=ja&authuser=0 "AMZJ-WS Chrome Web Store") on the Chrome Web Store.
+
 
 ## Usage
 
-Browse a product detail page at Amazon.co.jp. (e.g. `https://www.amazon.co.jp/dp/XXXXXXXXXX`), AMZJ-WS automatically updates the page.
+Browse a product detail page at Amazon.co.jp. (e.g. `https://www.amazon.co.jp/dp/B009IXJVVO/`), AMZJ-WS automatically updates the page.
 
 ## Features
 
@@ -22,7 +23,7 @@ Browse a product detail page at Amazon.co.jp. (e.g. `https://www.amazon.co.jp/dp
   - Landing image
   - Sample images
   - Trial reading images
-  - Carousel items
+  - Recommended items
 
 ## Known issues & Roadmap
 
