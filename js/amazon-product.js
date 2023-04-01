@@ -351,6 +351,12 @@ class AmazonTrialReadingHelper {
 		const gotoPageUrl = `https://read.amazon.co.jp/sample/print/go-to-page?asin=${trialReadingAsin}&buyingAsin=${trialReadingAsin}&page=1&token=null`
 		// console.debug(sampleImageUrl);
 
+		// debug
+		$.getJSON(gotoPageUrl, function (data) {
+			console.debug('[*] getJSON result');
+			console.debug(data);
+		});
+
 		$.ajax({
 			type: "GET",
 			url: gotoPageUrl,
@@ -531,17 +537,17 @@ class AmazonTrialReadingHelper {
 									if (contentType == 'application/javascript') {
 										// if javascript, extract data:image part and create image element
 										// skip, maybe it is enough if the all image/jpeg are loaded
-										// const imageDataMatchResult = data.toString().match(/"(data:image\/jpeg;base64,.+?)"/);
-										// if (imageDataMatchResult) {
-										// 	let imageLinkElement = createImageLinkElement('trial-reading-signed-' + id, imageDataMatchResult[1]);
-										// 	$('#trialReading-signed-content-placeholder-' + id).append(imageLinkElement);
-										// }
+										const imageDataMatchResult = data.toString().match(/"(data:image\/jpeg;base64,.+?)"/);
+										if (imageDataMatchResult) {
+											let imageLinkElement = createImageLinkElement('trial-reading-signed-' + id, imageDataMatchResult[1]);
+											$('#trialReading-signed-content-placeholder-' + id).append(imageLinkElement);
+										}
 									}
 									else if (contentType == 'image/jpeg') {
 										// if image itself, create image element
 										// skip, it should be enough if the all data:image/parts are loaded
-										let imageLinkElement = createImageLinkElement('trial-reading-signed-' + id, signedUrl);
-										$('#trialReading-signed-content-placeholder-' + id).append(imageLinkElement);
+										// let imageLinkElement = createImageLinkElement('trial-reading-signed-' + id, signedUrl);
+										// $('#trialReading-signed-content-placeholder-' + id).append(imageLinkElement);
 									}
 									else {
 										// if other content-type, skip it
