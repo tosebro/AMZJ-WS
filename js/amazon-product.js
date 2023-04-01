@@ -540,6 +540,7 @@ class AmazonTrialReadingHelper {
 										const imageDataMatchResult = data.toString().match(/"(data:image\/jpeg;base64,.+?)"/);
 										if (imageDataMatchResult) {
 											let imageLinkElement = createImageLinkElement('trial-reading-signed-' + id, imageDataMatchResult[1]);
+											$(imageLinkElement).attr('download', 'download');
 											$('#trialReading-signed-content-placeholder-' + id).append(imageLinkElement);
 										}
 									}

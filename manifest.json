@@ -4,7 +4,7 @@
 	"homepage_url": "https://github.com/tosebro/AMZJ-WS",
 	"name": "AMZJ-WS: Amazon Japan Window Shopper",
 	"description": "AMZJ-WS is a chrome extension to extend page view such as trial reading at Amazon.co.jp.",
-	"version": "0.1.0.1",
+	"version": "0.1.0.2",
 	"icons": {
 		"16": "amzj-ws-icon-16.png",
 		"48": "amzj-ws-icon-48.png",
