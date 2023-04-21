@@ -334,6 +334,7 @@ class AmazonTrialReadingHelper {
 	// load trial reading images from read.amazon.co.jp
 	static loadTrialReadingImages(trialReadingAsin, marketPlaceId) {
 		// AmazonTrialReadingHelper.loadTrialReadingImagesFromGotoPage(trialReadingAsin, marketPlaceId);
+		AmazonTrialReadingHelper.loadTrialReadingImagesFromGotoPage(trialReadingAsin, marketPlaceId);
 		AmazonTrialReadingHelper.loadTrialReadingImagesFromStartReading(trialReadingAsin, marketPlaceId);
 	}
 
@@ -343,19 +344,14 @@ class AmazonTrialReadingHelper {
 		let mySummaryAreaElement = getWindowShoppingElement();
 
 		// Approach 1: retrieve images from go-to-page response
-		// retrieve trial reading images
+		console.log('[*] Approach 1: retrieve images from go-to-page response');
+
+		// create element
 		let trialReadingGotopageElement = createSummarySectionElement('trialReading-gotopage');
 		mySummaryAreaElement.append(trialReadingGotopageElement);
 
-		console.log('[*] Approach 1: retrieve images from go-to-page response');
+		// retrieve trial reading images
 		const gotoPageUrl = `https://read.amazon.co.jp/sample/print/go-to-page?asin=${trialReadingAsin}&buyingAsin=${trialReadingAsin}&page=1&token=null`
-		// console.debug(sampleImageUrl);
-
-		// debug
-		$.getJSON(gotoPageUrl, function (data) {
-			console.debug('[*] getJSON result');
-			console.debug(data);
-		});
 
 		$.ajax({
 			type: "GET",
@@ -377,31 +373,6 @@ class AmazonTrialReadingHelper {
 					return;
 				}
 
-				// toggle link
-				let gotopageImagesToggleElement = $("<a>", {
-					id: 'trialReading-gotopage-content-toggle',
-					href: '#',
-					text: '[+]'
-				}).appendTo('#trialReading-gotopage-content');
-				// define a function as onclick
-				gotopageImagesToggleElement.on('click', function () {
-					if ($('#trialReading-gotopage-content-image').attr('style') == 'display: none;') {
-						$('#trialReading-gotopage-content-image').attr('style', 'display: block;');
-						$('#trialReading-gotopage-content-toggle').attr('text', '[-]');
-					}
-					else {
-						$('#trialReading-gotopage-content-image').attr('style', 'display: none;');
-						$('#trialReading-gotopage-content-toggle').attr('text', '[+]');
-					}
-				});
-
-				// define image area and toggle link
-				// image-area
-				var gotopageImagesAreaElement = $("<div>", {
-					id: 'trialReading-gotopage-content-image',
-					style: 'display: none;'
-				}).appendTo('#trialReading-gotopage-content');
-
 				// obtain urls from hiRes or mainUrl object in JSON
 				console.debug('[*] Obtain Trial Reading Images');
 				const largeImageUrlRegex = /https:\/\/\w+\.cloudfront\.net\/[0-9a-zA-Z.]+\.LXXXXXXX\.jpg\?[a-zA-Z0-9=~&._-]+/g;
@@ -410,12 +381,15 @@ class AmazonTrialReadingHelper {
 				Object.keys(imageUrlsJson).forEach(function (key) {
 					console.log('[*] Image data: ' + [key] + ': ' + imageUrlsJson[key]);
 					let imageLinkElement = createImageLinkElement('trial-reading-gotopage-' + key, imageUrlsJson[key]);
-					$('#trialReading-gotopage-content-image').append(imageLinkElement);
+					$('#trialReading-gotopage-content').append(imageLinkElement);
 				});
+
+				$('#trialReading-gotopage-status').text('[*] Completed loading trialReading-gotopage.');
 			},
 			// error
 			function (jqXHR, textStatus, errorThrown) {
 				console.log(`[!] ERROR: Failed to retrive trial reading go-to-page response. / Status: ${jqXHR.status} ${textStatus}`);
+				$('#trialReading-gotopage-status').text('[!] Failed loading trialReading-gotopage. Use the link above.');
 			}
 		);
 	}
@@ -440,10 +414,10 @@ class AmazonTrialReadingHelper {
 		let trialReadingSignedElement = createSummarySectionElement('trialReading-signed');
 		mySummaryAreaElement.append(trialReadingSignedElement);
 
-		let trialReadingSignedStatusElement = $("<div>", {
-			id: 'trialReading-signed-status',
-			style: 'margin: 0.2em 0em; padding: 0.1em 0.2em; background-color: #f0f040; color: #000000;'
-		}).appendTo('#trialReading-signed-content');
+		// let trialReadingSignedStatusElement = $("<div>", {
+		// 	id: 'trialReading-signed-status',
+		// 	class: 'mysummary_section_status'
+		// }).appendTo('#trialReading-signed-content');
 
 		// retrieve marketplace id from url
 		console.debug('[*] Market Place ID: ' + marketPlaceId);
@@ -452,7 +426,7 @@ class AmazonTrialReadingHelper {
 		const startReadingUrl = `https://read.amazon.co.jp/service/web/content/startReading?asin=${trialReadingAsin}&marketplace=${marketPlaceId}&cor=JP&clientVersion=999999999&randval=0.20289257499346114`;
 		console.debug('[*] startReadingUrl: ' + startReadingUrl);
 
-		trialReadingSignedStatusElement.text('[*] Start loading signed urls...');
+		$('#trialReading-signed-status').text('[*] Start loading signed urls...');
 
 		$.ajax({
 			type: "GET",
@@ -503,8 +477,8 @@ class AmazonTrialReadingHelper {
 
 						// if not supported, return
 						if (data.downloadRestrictionReason) {
-							console.log('[!] getFileUrl failed. Error code: ' + data.downloadRestrictionReason.reasonCode);
-							trialReadingSignedStatusElement.text('[!] getFileUrl failed. Error code: ' + data.downloadRestrictionReason.reasonCode);
+							console.log(`[!] getFileUrl failed. Error code: ${data.downloadRestrictionReason.reasonCode}`);
+							$('#trialReading-signed-status').text(`[!] getFileUrl failed. Error code: ${data.downloadRestrictionReason.reasonCode}`);
 							return;
 						}
 
@@ -532,7 +506,7 @@ class AmazonTrialReadingHelper {
 									const contentType = jqXHR.getResponseHeader('Content-Type');
 									const status = `[*] Sample Image signedUrl id: ${id} / Status ${jqXHR.status} / ${contentType}`;
 									console.log(status);
-									trialReadingSignedStatusElement.text(status);
+									$('#trialReading-signed-status').text(status);
 
 									if (contentType == 'application/javascript') {
 										// if javascript, extract data:image part and create image element
@@ -556,21 +530,18 @@ class AmazonTrialReadingHelper {
 									}
 
 									if (id == resourceIdTo) {
-										trialReadingSignedStatusElement.text('[*] Completed loading trial reading images.');
-										trialReadingSignedStatusElement.attr('style', 'margin: 0.2em 0em; padding: 0.1em 0.2em; background-color: #40f040; color: #000000;');
+										$('#trialReading-signed-status').text('[*] Completed loading trial reading images.');
 										AmazonTrialReadingHelper.changeFaviconWithReading();
 									}
 								},
 								// error
 								function (jqXHR, textStatus, errorThrown) {
-									const status = `[!] Sample Image signedUrl id: ${id} / Status ${jqXHR.status} / ERROR`
+									const status = `[!] Sample Image signedUrl id: ${id} / Status ${jqXHR.status} / ERROR`;
 									console.log(status);
-									trialReadingSignedStatusElement.text(status);
-									trialReadingSignedStatusElement.attr('style', 'margin: 0.2em 0em; padding: 0.1em 0.2em; background-color: #f04040; color: #000000;');
+									$('#trialReading-signed-status').text(status);
 
 									if (id == resourceIdTo) {
-										trialReadingSignedStatusElement.text('[*] Completed loading trial reading images.');
-										trialReadingSignedStatusElement.attr('style', 'margin: 0.2em 0em; padding: 0.1em 0.2em; background-color: #40f040; color: #000000;');
+										$('#trialReading-signed-status').text('[*] Completed loading trial reading images.');
 										AmazonTrialReadingHelper.changeFaviconWithReading();
 									}
 								}
@@ -775,8 +746,6 @@ function insertSampleImages() {
 	console.debug("[*] Sample Image start");
 
 	let mySummaryElement = getWindowShoppingElement();
-	mySummaryElement.append(createSeparatorElement());
-
 	let largeSampleImagesElement = createSummarySectionElement('largeSampleImages');
 	mySummaryElement.append(largeSampleImagesElement);
 
@@ -802,11 +771,7 @@ function insertSampleImages() {
 	console.debug('[*] Sample Image count:' + urls.length);
 	console.debug('[*] Sample Image urls:');
 	console.debug(urls);
-
-	let sampleImagesStatusElement = createBlockElement('largeSampleImages-status');
-	$(sampleImagesStatusElement).appendTo('#largeSampleImages-content');
-	// if no sample images, print the result
-	$(sampleImagesStatusElement).text('Sample images: ' + urls.length);
+	$('#largeSampleImages-status').text('Sample images count: ' + urls.length);
 
 	console.debug("[*] Sample Image end");
 }
@@ -817,26 +782,19 @@ function insertTrialReadingImages() {
 
 	// create area for trial reading
 	let mySummaryElement = getWindowShoppingElement();
-	mySummaryElement.append(createSeparatorElement());
-
 	let trialReadingElement = createSummarySectionElement('trialReading');
 	mySummaryElement.append(trialReadingElement);
 
-	let trialReadingStatusElement = $("<div>", {
-		id: 'trialReadingStatus',
-		text: 'trial reading'
-	}).appendTo('#trialReading-content');
-
-	// if a trial reading link available, retrieve trial reading images
+	// check if a trial reading link available
 	let hasTrialReading = ($('#litb-read-frame').length != 0 || $('#ebooksSitbLogo').length != 0 || $('#sitbLogo').length != 0);
 	if (!hasTrialReading) {
-		$(trialReadingStatusElement).text('[!] Trial Reading: Not Available');
+		$('#trialReading-status').text('[!] Trial Reading: Not Available');
 		return;
 	}
 
-	$(trialReadingStatusElement).text('[*] Trial Reading: Available');
+	// retrieve trial reading images
+	$('#trialReading-status').text('[*] Trial Reading: Available');
 
-	// Approach 1, load images using iframe/link in read.amazon.co.jp
 	// obtain ASIN for trial reading image
 	let trialReadingAsin = product.asin;
 	// if another ASIN for trial reading found in the page, overwrite the target asin
@@ -855,16 +813,13 @@ function insertTrialReadingImages() {
 	});
 
 	// create link to read.amazon.co.jp with parameters
-	// const readUrl = `https://read.amazon.co.jp/trialReadingAsin=${trialReadingAsin}/marketPlaceId=${marketPlaceId}/`;
-	// let trialReadingPageLinkElement = $('<a>', {
-	// 	id: 'trialReadingPageLink',
-	// 	href: readUrl,
-	// 	target: '_blank',
-	// 	text: readUrl
-	// }).appendTo('#trialReading-content');
-
-	// open the link automatically
-	// window.open(readUrl);
+	const readUrl = `https://read.amazon.co.jp/trialReadingAsin=${trialReadingAsin}/marketPlaceId=${marketPlaceId}/`;
+	let trialReadingPageLinkElement = $('<a>', {
+		id: 'trialReadingPageLink',
+		href: readUrl,
+		target: '_blank',
+		text: readUrl
+	}).appendTo('#trialReading-content');
 
 	// load trial reading images using ASIN and Market Place ID
 	AmazonTrialReadingHelper.loadTrialReadingImages(trialReadingAsin, marketPlaceId);
@@ -887,9 +842,6 @@ function insertCarouselItems() {
 	let navigateLinkElement = createNavigateLinkElement('carouselItems');
 	navigateLinkElement.attr('accesskey', 'c')
 	$('#myNavigateArea').append(navigateLinkElement);
-
-	let carouselStatsElement = createBlockElement('carouselStats');
-	$('#carouselItems-content').append(carouselStatsElement);
 
 	let carouselItemListElement = createBlockElement('carouselItemList');
 	$('#carouselItems-content').append(carouselItemListElement);
@@ -1066,12 +1018,8 @@ function loadCarouselItems() {
 			const uniqAsins = uniq(asins);
 			// debug: print asin count
 			console.debug(`[*] Carousel asin count: ${uniqAsins.length}`);
-
 			// display count in current page
-			let carouselItemsStatusElement = $("<div>", {
-				id: 'carouselItems-status'
-			}).prependTo('#carouselItems-content');
-			carouselItemsStatusElement.text(`[*] Carousel asin count: ${uniqAsins.length}`);
+			$('#carouselItems-status').text(`[*] Carousel asin count: ${uniqAsins.length}`);
 
 			// loop and process each 30 carousel items
 			while (true) {
@@ -1249,6 +1197,10 @@ function createSummarySectionElement(sectionName) {
 	headerElement.text(sectionName);
 	headerElement.addClass('mysummary_section_header');
 	sectionElement.append(headerElement);
+
+	let statusElement = createBlockElement(sectionName + '-status');
+	statusElement.addClass('mysummary_section_status');
+	sectionElement.append(statusElement);
 
 	let contentElement = createBlockElement(sectionName + '-content');
 	contentElement.addClass('mysummary_section_content');
