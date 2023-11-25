@@ -29,4 +29,6 @@ Browse a product detail page at Amazon.co.jp. (e.g. `https://www.amazon.co.jp/dp
 
 - Not supported some type of trial reading
   - click the link `試し読み` manually if trial reading not extended
+- Add a button to copy product information
+- Some options
 

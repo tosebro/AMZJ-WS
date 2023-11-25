@@ -2,9 +2,9 @@
 	"manifest_version": 3,
 	"author": "tosebro",
 	"homepage_url": "https://github.com/tosebro/AMZJ-WS",
-	"name": "AMZJ-WS: Amazon Japan Window Shopper",
+	"name": "AMZJ-WS: Amazon.co.jp Window Shopper",
 	"description": "AMZJ-WS is a chrome extension to extend page view such as trial reading at Amazon.co.jp.",
-	"version": "0.1.0.3",
+	"version": "0.1.0.4",
 	"icons": {
 		"16": "amzj-ws-icon-16.png",
 		"48": "amzj-ws-icon-48.png",
@@ -22,7 +22,7 @@
 			],
 			"js": [
 				"js/amazon-product.js",
-				"js/lib/jquery-3.6.4.min.js"
+				"js/lib/jquery-3.7.1.min.js"
 			],
 			"css": [
 				"css/amazon.css"
@@ -34,7 +34,7 @@
 			],
 			"js": [
 				"js/amazon-read.js",
-				"js/lib/jquery-3.6.4.min.js"
+				"js/lib/jquery-3.7.1.min.js"
 			],
 			"css": [
 				"css/amazon.css"
@@ -44,6 +44,7 @@
 	"action": {
 	},
 	"permissions": [
+		"storage"
 	],
 	"host_permissions": [
 		"https://www.amazon.co.jp/*",

@@ -6,7 +6,7 @@ console.debug('[*] amazon-product.js loaded.');
 const classnamePrefix = 'amzj-ws_';
 
 // define class for carousel item
-class Carousel {
+class CarouselItem {
 	// constructor
 	constructor() {
 		this.asin = '';
@@ -569,7 +569,7 @@ window.onload = function () {
 
 // main function
 function main() {
-	console.debug('[*] Loading page completed. Started creating the windows shopping part.');
+	console.debug('[*] Loading page completed. Started creating the window shopping part...');
 
 	// phrases to check the page type
 	const ageVerificationRedirectUrlPrefix = 'https://www.amazon.co.jp/gp/product/black-curtain-redirect.html';
@@ -578,20 +578,31 @@ function main() {
 	const antiAutomatedAccessPhrase = 'To discuss automated access to Amazon data please contact api-services-support@amazon.com.';
 	const markupHtml = document.documentElement.innerHTML;
 
+	// get age verification bypass flag from LocalStorage
+	const enableAgeVerificationBypassLocalStorageValue = localStorage.getItem('enableAgeVerificationBypass')
+	const enableAgeVerificationBypass = (enableAgeVerificationBypassLocalStorageValue == 'true');
+	console.debug('[*] Check enableAgeVerificationBypass flag: ' + enableAgeVerificationBypass);
+
 	if (location.href.indexOf(ageVerificationPageUrl) == 0 || $('#black-curtain-warning').length !== 0) {
-		// if age verification page, submit 'yes' button automatically
+		// if age verification page
+		// check bypass flag. If true, submit 'yes' button automatically
 		// e.g. https://www.amazon.co.jp/black-curtain/black-curtain?ie=UTF8&returnUrl=%2Fdp%2FXXXXXXXXXX
-		console.debug('[*] Identified age verification page - black curtain');
-		console.debug('[*] Click yes button... Move to href url instead...');
-		const url = $('#black-curtain-yes-button > span > a').attr('href');
-		console.debug(url);
-		location.href = url;
+		if (enableAgeVerificationBypass) {
+			console.debug('[*] Identified age verification page - black curtain');
+			console.debug('[*] Click yes button... Move to href url instead...');
+			const url = $('#black-curtain-yes-button > span > a').attr('href');
+			console.debug(url);
+			location.href = url;
+		}
 	}
 	else if ($('a[href^="' + ageVerificationRedirectUrlPrefix + '"]').length !== 0) {
 		// if age verification page with redirect link
-		console.debug('[*] Identified age verification page (redirection page)');
-		console.debug('[*] Click yes button...');
-		const redirectUrl = $('a[href^="' + ageVerificationRedirectUrlPrefix + '"]')[0].click();
+		// check bypass flag. If true, submit 'yes' button automatically
+		if (enableAgeVerificationBypass) {
+			console.debug('[*] Identified age verification page (redirection page)');
+			console.debug('[*] Click yes button...');
+			const redirectUrl = $('a[href^="' + ageVerificationRedirectUrlPrefix + '"]')[0].click();
+		}
 	}
 	else if (markupHtml.indexOf(antiAutomatedAccessPhrase) != -1) {
 		// if anti automated access page, wait some seconds and then reload the page
@@ -623,11 +634,8 @@ function insertWindowShoppingArea() {
 		width: '100%'
 	}).insertBefore('#dp');
 
-	// create navigate area
-	let navigateAreaElement = $("<div>", {
-		id: 'myNavigateArea',
-		width: '100%'
-	}).appendTo(mySummaryAreaElement);
+	// Navigation area
+	insertNavigation();
 
 	// title information
 	insertTitleInformation();
@@ -654,6 +662,35 @@ function insertWindowShoppingArea() {
 	console.debug("[*] insertWindowShoppingArea ended.");
 }
 
+// insert navigation links
+function insertNavigation() {
+	console.debug("[*] Navigation start");
+
+	// create title information element
+	let sectionElement = createSummarySectionElement('navigationLinks');
+
+	// append to summary elemtnt
+	let mySummaryElement = getWindowShoppingElement();
+	mySummaryElement.append(sectionElement);
+
+	// add navigate link
+	let carouselLink = createNavigateLinkElement('carouselItems', 'Recommended_Items');
+	carouselLink.attr('accesskey', 'c');
+	$('#navigationLinks-content').append(carouselLink);
+
+	// add navigate link
+	let dpLink = createNavigateLinkElement('dp', 'Original_Product_Part');
+	dpLink.attr('accesskey', 'p');
+	$('#navigationLinks-content').append(dpLink);
+
+	// copy url button
+	let copyUrlButton = createCopyButtonElement('copyUrlButton', '', product.url);
+	copyUrlButton.text('Copy URL');
+	$('#navigationLinks-content').append(copyUrlButton);
+
+	console.debug("[*] Navigation end");
+}
+
 // insert title area
 function insertTitleInformation() {
 	console.debug("[*] Title Information start");
@@ -666,7 +703,6 @@ function insertTitleInformation() {
 	mySummaryElement.append(titleInformationElement);
 
 	// set up title information
-	let titleElement = createSummarySectionElement('titleInformation');
 	$('#titleInformation-content').text(product.title);
 
 	console.debug("[*] Title Information end");
@@ -838,11 +874,7 @@ function insertCarouselItems() {
 	let mySummaryElement = getWindowShoppingElement();
 	mySummaryElement.append(carouselItemsElement);
 
-	// add navigate link
-	let navigateLinkElement = createNavigateLinkElement('carouselItems');
-	navigateLinkElement.attr('accesskey', 'c')
-	$('#myNavigateArea').append(navigateLinkElement);
-
+	// item list area
 	let carouselItemListElement = createBlockElement('carouselItemList');
 	$('#carouselItems-content').append(carouselItemListElement);
 
@@ -1267,22 +1299,27 @@ function createImageLinkElement(id, url) {
 }
 
 // create a link element to navigate
-// id: ID for the HTML element
+// anchor: id attributre to navigate
+// label: label for the link
 // return: jQuery element for the link
-function createNavigateLinkElement(id) {
+function createNavigateLinkElement(anchor, label) {
 	// if id not specified, assign a random string to id
-	if (id == null || id == '') {
-		id = Math.random().toString(36).substring(2);
+	if (anchor == null || anchor == '') {
+		anchor = Math.random().toString(36).substring(2);
+	}
+
+	if (label == null || label == '') {
+		label = 'navigation-' + anchor;
 	}
 
 	let linkElement = $("<a>", {
-		id: 'navigate-' + id,
-		title: 'navigate-' + id,
-		href: '#' + id,
-		style: 'font-weight: bold; font-size: 120%;'
+		id: 'navigate-' + anchor,
+		title: label,
+		href: '#' + anchor,
+		style: 'font-weight: bold; font-size: 120%; margin: 0em 0.5em;'
 	});
 
-	linkElement.text(id);
+	linkElement.text(label);
 
 	return linkElement;
 }

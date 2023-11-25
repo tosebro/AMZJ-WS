@@ -33,6 +33,13 @@ body {
     color: #202080;
 }
 
+.mysummary_section_status {
+    margin: 0.2em 0em;
+    padding: 0.1em 0.2em;
+    background-color: #f0f0f0;
+    color: #000000;
+}
+
 #summaryDescription-content {
     width: 60%;
     font-size: 1em;
@@ -43,6 +50,7 @@ body {
     font-size: 1.1em;
     line-height: 150%;
 }
+
 
 .mysummary_separator {
     margin: 1em 0em;
@@ -86,18 +94,8 @@ body {
 #trialReadingPageLink, #originalPageLink {
     display: inline;
     margin: 0.5em 0.5em;
-    line-height: 150%;
+    line-height: 120%;
     font-size: 1.5em;
     font-weight: bold;
     color: #c0e052;
-}
-
-a {
-    color: transparent;
-    border-radius: 2px;
-}
-
-a:hover {
-    color:#d03030;
-    border: 2px solid #e0e040;
 }
